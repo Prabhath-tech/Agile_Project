@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Kanban Board</title>
+
+
+    {% load static %}
+    <link href="{% static 'tracker/css/admin.css' %}" rel="stylesheet">
+</head>
+
+<body>
+    <header class="head">
+        <h1>Kanban Board</h1>
+    </header>
+
+    <main class="board">
+        <section class="column" id="todo" ondrop="drop(event, 'todo')" ondragover="allowDrop(event)" aria-labelledby="todo-heading">
+            <h2 id="todo-heading">Todo</h2>
+            <hr>
+           <!-- Remove the dropdown section -->
+    <div class="tasks-in-btn">
+        <form onsubmit="addTask('todo'); return false;">
+            <label for="taskInput" class="sr-only">Task Input</label>
+            <input type="text" id="taskInput" class="task-input" placeholder="Enter a task..." oninput="capitalizeInput(this)" aria-label="Task Input">
+            
+            <button type="submit" class="add-task-btn" aria-label="Add Task">Add Task</button>
+        </form>
+    </div>
+
+            <div class="task-container" role="list" aria-live="polite"></div>
+        </section>
+
+        <section class="column" id="in-progress" ondrop="drop(event, 'in-progress')" ondragover="allowDrop(event)" aria-labelledby="in-progress-heading">
+            <h2 id="in-progress-heading">In Progress</h2>
+            <hr>
+            <div class="task-container" role="list" aria-live="polite"></div>
+        </section>
+
+        <section class="column" id="done" ondrop="drop(event, 'done')" ondragover="allowDrop(event)" aria-labelledby="done-heading">
+            <h2 id="done-heading">Done</h2>
+            <hr>
+            <div class="task-container" role="list" aria-live="polite"></div>
+        </section>
+    </main>
+
+    <aside class="users-panel">
+        <h2>Users</h2>
+        <div id="usersList">
+            
+
+        </div>
+    </aside>
+
+    <script src="{% static 'tracker/js/admin.js' %}"></script>
+</body>
+
+</html>

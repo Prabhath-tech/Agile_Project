@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile Project Tracker</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    {% load static %}
+    <link href="{% static 'tracker/css/styles.css' %}" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation Bar -->
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="{% url 'index' %}">AgilePM Tracker</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/features/' %}active{% endif %}" href="#feature">Features</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/about/' %}active{% endif %}" href="#About">About</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/contact/' %}active{% endif %}" href="#contacts">Contact</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+    <!-- Header Section -->
+    <header class="text-center py-5">
+        
+        <div class="container">
+            <h1 class="display-4">Agile Project Tracker</h1>
+            <p class="lead">Efficiently manage your projects with our comprehensive tool.</p>
+            <a href="{% url 'login' %}" class="btn btn-lg btn-light">Login</a>
+            <a href="{% url 'signup' %}" class="btn btn-lg btn-light">Signup</a>
+        </div>
+        
+    </header>
+    <section id="feature">
+      <hr>
+      <h5>Features</h5>
+      <hr>
+    </section>
+
+
+    <!-- Features Section -->
+    <section id="features" class="py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="feature-item">
+                        <i class="icon-lg text-primary mb-3"></i>
+                        <h3 class="h5">Scalability
+                            
+                        </h3>
+
+                        {% load static %}
+                        <p class="description">By using our Agile Project Management Tracker, your organization can effortlessly scale its project management capabilities. Whether you're managing a small startup team or a large enterprise, our tool adapts to your growing needs. You can add more users, projects, and tasks without experiencing a drop in performance. This ensures that as your business expands, your project management solution grows with you, providing consistent support and efficiency.</p>
+
+                        <img id="cover" src="{% static 'tracker/images/scalability.webp' %}">
+
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature-item">
+                        <i class="icon-lg text-primary mb-3"></i>
+                        <h3 class="h5">Real-time updates</h3>
+                        <img id="cover" src="{% static 'tracker/images/Real-time updates.jpeg' %}">
+
+                        <p class="description">This feature allows team members to see the latest changes instantly as they happen. Whether it’s updating task statuses, adding new comments, or modifying project details, all users have access to the most current information. This ensures that everyone is on the same page, facilitating better communication, quicker decision-making, and enhanced collaboration. It minimizes the risk of working with outdated information and helps teams stay aligned with project goals.</p>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="feature-item">
+                        <i class="icon-lg text-primary mb-3"></i>
+                        <h3 class="h5">Ease of use</h3>
+                        <img id="cover" src="{% static 'tracker/images/easeofuse.webp' %}">
+                        <p class="description"> By reducing the learning curve, this feature enhances productivity, allowing teams to focus more on their work rather than figuring out how to use the tool. It also improves user satisfaction and encourages widespread adoption across the organization.
+
+                            By emphasizing these features, your Agile Project Management Tracker will appeal to a wide range of users and organizations looking for a robust, efficient, and user-friendly project management solution.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="About">
+      <hr>
+      <h5>About Us</h5>
+      <hr>
+    </section>
+    <div class="about">
+      <p>Welcome to AgilePM Tracker! We are a team of aspiring software engineers and project management enthusiasts currently pursuing our Master's degrees in Information Technology in Sri Lanka.<br> Our academic journey and professional experiences have equipped us with a robust understanding of agile methodologies and software engineering principles, which we are eager to share through this platform.</p>
+      <p>With backgrounds in Business Economics and a passion for innovation in electronics, we have always been drawn to the dynamic and ever-evolving world of technology. Our roles as assistant lecturers have given us the opportunity to teach and inspire future tech enthusiasts, fostering a collaborative and engaging learning environment.</p>
+       
+    </div>
+    <section id="About">
+      <hr>
+      <h5>Contact</h5>
+      
+
+      <hr>
+    </section>
+
+    <section id="contacts">
+      
+      <p>Thank you for visiting AgilePM Tracker. <br><br>We are always open to feedback, collaboration, and new ideas. <br>Feel free to reach out if you have any questions or if you'd like to learn more about how AgilePM Tracker can benefit your team.
+      <br><br>Tp: +9470123567
+    <br><br>email:  example@gmail.com</p>
+      
+    </section>
+   
+
+    <!-- Footer Section -->
+    <footer class="text-white text-center py-4">
+        <div class="container">
+            <p class="m-0">© 2024 Agile Project Tracker. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS and Dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Custom JS -->
+    <!-- <script src="js/scripts.js"></script> -->
+</body>
+</html>

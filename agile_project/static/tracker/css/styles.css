@@ -1,0 +1,103 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #ecf0f3;
+    background-color: #ebeff5;
+    margin: 0px;
+    padding: 0px;
+}
+
+header {
+    background: #ffffff;
+    color:#01081a;
+    text-align:center;
+    padding:100px 0;
+}
+    
+
+.feature-item {
+    text-align: justify;
+    padding:10px;
+    margin-bottom: 5px;
+    
+    border-radius: 5px;
+    background-color: rgb(242, 247, 247);
+    
+}
+
+footer {
+    background: #01081a;
+    color: white;
+    padding: 20px 0;
+}
+#cover{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Ensure the image covers the entire container */
+    z-index: 1;
+    border-radius: 10px;
+    border: 3px solid #11ccf7  ;
+   
+}
+.description{
+    position: relative;
+    z-index: 2; /* Place the content above the image */
+    color: #000000;/* Text color for better contrast */
+    text-align:left;
+    padding: 20px;
+    background-color: #ebeff5;
+    border: 1px dotted;
+    border-radius: 10px;
+    
+}
+.h5{
+    position: relative;
+    z-index: 2;
+    color: #000000;
+    background-color:#e498a0;
+    padding: 0.2em;
+}
+
+.col-lg-4{
+   
+}
+#login{
+    background-color: #01081a;
+}
+#signup{
+    background-color: #01081a;
+}
+.nav-link:hover {
+    background-color: #e2ece0;
+
+
+}
+.navbar-brand:hover {
+    background-color:#c2c8cd;
+
+}
+.navbar {
+    background-color:#c2c8cd;
+
+}
+.nav-link.active{
+            color: #fff !important;
+            background-color: #b67383!important; /* Change this to your preferred color */
+}
+#About,#feature,#contact{
+    background-color: #c2c8cd;
+}
+.navbar-toggler,.btn{
+    background-color: #e46e83;
+}
+.navbar-toggler:hover,.btn:hover{
+    background-color:#c2c8cd;
+}
+#contacts{
+    color: #edf2f7;
+    background-color:#070707;
+  
+}
+

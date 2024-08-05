@@ -1,0 +1,188 @@
+/* style.css */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+}
+
+.head {
+    background-color: #1976d2;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.head h1 {
+    font-size: 24px;
+    margin: 0;
+}
+
+.board {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    padding: 20px;
+}
+
+.column {
+    width: calc(100%);
+    max-width: 300px;
+    margin: 10px;
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.column h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.task-input {
+    width: 60%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+.add-task-btn {
+    background-color: #4caf50;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-task-btn:hover {
+    background-color: #45a049;
+}
+
+#todo .task {
+    background-color: #b3e5fc; /* Light blue */
+}
+
+#in-progress .task {
+    background-color: #ffcdd2; /* Light pink */
+}
+
+#done .task {
+    background-color: #c8e6c9; /* Light green */
+}
+
+.task {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+    cursor: move;
+    position: relative;
+}
+.task:hover{
+    border-radius: 10px;
+    border-color: #02b908;
+
+}
+.task-content {
+    flex-grow: 1;
+    margin-bottom: 10px;
+}
+.task .user {
+    margin-right: 5px;
+
+}
+
+
+.users-panel {
+    width: 200px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 20px;
+    float: right;
+}
+
+.users-panel h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.users-container {
+    display: flex;
+    flex-wrap: wrap; /* Allows user elements to wrap if they exceed the container width */
+    max-height: 60px; /* Adjust this value as needed */
+    overflow: hidden; /* Hides any overflowing content */
+    position: relative;
+}
+.task .users-container {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.users-dropdown {
+    display:block; /* Initially hidden */
+    position: absolute;
+    top: 100%; /* Positions dropdown below the user list */
+    left: 0;
+    right: 0;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+    border-radius: 0 0 5px 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 5px;
+    z-index: 1;
+    max-height: 100px; /* Adjust this value as needed */
+    overflow-y: auto; /* Adds a scrollbar if needed */
+}
+.task .users-dropdown {
+    margin-top: 5px;
+}
+.show-more {
+    cursor: pointer;
+    color: #1976d2;
+    font-size: 12px;
+    margin-top: 5px;
+    text-align: center;
+    z-index: 1;
+}
+.show-more:hover {
+    text-decoration: underline;
+}
+.user {
+    background-color: #e0e0e0;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: inline-block;
+    margin-right: 5px; /* Adds space between users */
+}
+.user.highlighted {
+    background-color: #ffeb3b;
+}
+
+.user.selected {
+    background-color: #02b908;
+}
+
+.delete-btn {
+    color: red;
+    cursor:pointer;
+}
+.task .user.hidden {
+    display: none;
+}
