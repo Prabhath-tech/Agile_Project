@@ -186,3 +186,25 @@ body {
 .task .user.hidden {
     display: none;
 }
+/* Add these styles to your existing CSS */
+
+.description-container {
+    margin-top: 10px;
+}
+
+.description-label {
+    color: #1976d2;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.description-input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-top: 5px;
+    font-size: 14px;
+    display: none;
+}
+

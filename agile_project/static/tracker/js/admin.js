@@ -62,6 +62,10 @@ const KanbanBoard = (() => {
                     <div class="show-more" data-task-id="${task.id}">Show more</div>
                 ` : ''}
             </div>
+            <div class="description-container">
+                <label class="description-label" data-task-id="${task.id}">${task.description ? 'View Description' : 'Add Description'}</label>
+                <textarea class="description-input" data-task-id="${task.id}" style="display: none;">${task.description || ''}</textarea>
+            </div>
             <span class="delete-btn" data-id="${task.id}">×</span>
         `;
 
@@ -84,10 +88,27 @@ const KanbanBoard = (() => {
             e.stopPropagation();
         });
 
-        // Ensuring the delete button works
         taskDiv.querySelector('.delete-btn').addEventListener('click', (e) => {
             deleteTask(task.id);
             e.stopPropagation();
+        });
+
+        const descriptionLabel = taskDiv.querySelector('.description-label');
+        const descriptionInput = taskDiv.querySelector('.description-input');
+
+        descriptionLabel.addEventListener('click', () => {
+            const isHidden = descriptionInput.style.display === 'none';
+            descriptionInput.style.display = isHidden ? 'block' : 'none';
+            if (isHidden) {
+                descriptionInput.focus();
+            }
+        });
+
+        descriptionInput.addEventListener('blur', () => {
+            task.description = descriptionInput.value;
+            updateLocalStorage();
+            descriptionLabel.innerText = descriptionInput.value ? 'View Description' : 'Add Description';
+            descriptionInput.style.display = 'none';
         });
 
         return taskDiv;
