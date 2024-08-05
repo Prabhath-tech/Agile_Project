@@ -59,10 +59,11 @@ body {
     text-align: center;
     text-decoration: none;
     display: inline-block;
-    font-size: 14px;
+    font-size: 16px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s;
+    margin: 2px;
 }
 
 .add-task-btn:hover {
@@ -92,20 +93,20 @@ body {
     cursor: move;
     position: relative;
 }
-.task:hover{
+
+.task:hover {
     border-radius: 10px;
     border-color: #02b908;
-
 }
+
 .task-content {
     flex-grow: 1;
     margin-bottom: 10px;
 }
+
 .task .user {
     margin-right: 5px;
-
 }
-
 
 .users-panel {
     width: 200px;
@@ -129,13 +130,14 @@ body {
     overflow: hidden; /* Hides any overflowing content */
     position: relative;
 }
+
 .task .users-container {
     display: flex;
     flex-wrap: wrap;
 }
 
 .users-dropdown {
-    display:block; /* Initially hidden */
+    display: block; /* Initially hidden */
     position: absolute;
     top: 100%; /* Positions dropdown below the user list */
     left: 0;
@@ -149,9 +151,11 @@ body {
     max-height: 100px; /* Adjust this value as needed */
     overflow-y: auto; /* Adds a scrollbar if needed */
 }
+
 .task .users-dropdown {
     margin-top: 5px;
 }
+
 .show-more {
     cursor: pointer;
     color: #1976d2;
@@ -160,9 +164,11 @@ body {
     text-align: center;
     z-index: 1;
 }
+
 .show-more:hover {
     text-decoration: underline;
 }
+
 .user {
     background-color: #e0e0e0;
     padding: 5px 10px;
@@ -171,6 +177,7 @@ body {
     display: inline-block;
     margin-right: 5px; /* Adds space between users */
 }
+
 .user.highlighted {
     background-color: #ffeb3b;
 }
@@ -181,15 +188,22 @@ body {
 
 .delete-btn {
     color: red;
-    cursor:pointer;
+    cursor: pointer;
+    opacity: 0.5;
+    font-size: 25px;
 }
+.delete-btn:hover {
+    opacity: 1;
+    
+}
+
 .task .user.hidden {
     display: none;
 }
-/* Add these styles to your existing CSS */
 
 .description-container {
     margin-top: 10px;
+    width: 100%;
 }
 
 .description-label {
@@ -199,12 +213,60 @@ body {
 }
 
 .description-input {
-    width: 100%;
+    width:90%;
+    max-width:90%;
+    min-width: 90%;
+    min-height:150px;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
     margin-top: 5px;
-    font-size: 14px;
+    margin-right: 5px;
+    font-size: 12px;
     display: none;
 }
 
+.images-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+}
+
+.task-image {
+    max-width: 100%;
+    border-radius: 5px;
+    margin-bottom: 5px;
+}
+
+.image-upload-label {
+    color: #1976d2;
+    cursor: pointer;
+    font-size: 12px;
+    margin-top: 5px;
+}
+.delete-image-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    border: none;
+    color: red;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 1;
+    padding: 2px 5px;
+    border-radius: 50%;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+
+
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+}
+
+.delete-image-btn:hover {
+    opacity: 1;
+}

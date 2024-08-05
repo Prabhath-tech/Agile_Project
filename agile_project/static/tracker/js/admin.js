@@ -36,6 +36,8 @@ const KanbanBoard = (() => {
         taskDiv.id = task.id;
         taskDiv.className = "task";
         taskDiv.draggable = true;
+        taskDiv.ondrop = (event) => dropUserOnTask(event, task.id);
+        taskDiv.ondragover = allowDrop;
 
         const userDetails = users.reduce((acc, user) => {
             acc[user.id] = user.name;
@@ -53,6 +55,13 @@ const KanbanBoard = (() => {
             <span class="user hidden" data-id="${userId}">${userDetails[userId]}</span>
         `).join('');
 
+        const imagesHtml = (task.images || []).map((imageSrc, index) => `
+            <div class="image-wrapper">
+                <img src="${imageSrc}" class="task-image" alt="Task Image">
+                <span class="delete-image-btn" data-task-id="${task.id}" data-image-index="${index}">×</span>
+            </div>
+        `).join('');
+
         taskDiv.innerHTML = `
             <div class="task-content">${task.content}</div>
             <div class="users-container">
@@ -66,8 +75,25 @@ const KanbanBoard = (() => {
                 <label class="description-label" data-task-id="${task.id}">${task.description ? 'View Description' : 'Add Description'}</label>
                 <textarea class="description-input" data-task-id="${task.id}" style="display: none;">${task.description || ''}</textarea>
             </div>
+            <div class="images-container">
+                ${imagesHtml}
+                <input type="file" class="image-upload" data-task-id="${task.id}" accept="image/*" style="display: none;">
+                <label class="image-upload-label" data-task-id="${task.id}">
+                    <i class="bi bi-image"></i> Add Image
+                </label>
+            </div>
             <span class="delete-btn" data-id="${task.id}">×</span>
         `;
+
+        taskDiv.querySelectorAll('.delete-image-btn').forEach(deleteBtn => {
+            deleteBtn.addEventListener('click', (e) => {
+                const taskId = e.target.dataset.taskId;
+                const imageIndex = e.target.dataset.imageIndex;
+                if (confirm('Do you really want to delete this item?')) {
+                    deleteImage(taskId, imageIndex);
+                }
+            });
+        });
 
         const showMoreButton = taskDiv.querySelector('.show-more');
         if (showMoreButton) {
@@ -89,8 +115,10 @@ const KanbanBoard = (() => {
         });
 
         taskDiv.querySelector('.delete-btn').addEventListener('click', (e) => {
-            deleteTask(task.id);
-            e.stopPropagation();
+            if (confirm('Do you really want to delete this item?')) {
+                deleteTask(task.id);
+                e.stopPropagation();
+            }
         });
 
         const descriptionLabel = taskDiv.querySelector('.description-label');
@@ -111,13 +139,43 @@ const KanbanBoard = (() => {
             descriptionInput.style.display = 'none';
         });
 
+        const imageUploadLabel = taskDiv.querySelector('.image-upload-label');
+        const imageUploadInput = taskDiv.querySelector('.image-upload');
+
+        imageUploadLabel.addEventListener('click', () => {
+            imageUploadInput.click();
+        });
+
+        imageUploadInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    task.images = task.images || [];
+                    task.images.push(e.target.result);
+                    updateLocalStorage();
+                    renderTasks();
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        });
+
         return taskDiv;
+    }
+
+    function deleteImage(taskId, imageIndex) {
+        const task = tasks.find(task => task.id === taskId);
+        if (task) {
+            task.images.splice(imageIndex, 1);
+            updateLocalStorage();
+            renderTasks();
+            showConfirmation('Image deleted successfully');
+        }
     }
 
     function renderUsers() {
         const usersList = document.getElementById('usersList');
         usersList.innerHTML = users.map(user => `
-            <div class="user" data-id="${user.id}">
+            <div class="user" data-id="${user.id}" draggable="true">
                 ${user.name}
             </div>
         `).join('');
@@ -127,6 +185,7 @@ const KanbanBoard = (() => {
                 toggleUserSelection(userDiv.dataset.id);
                 e.stopPropagation();
             });
+            userDiv.addEventListener('dragstart', dragUser);
         });
     }
 
@@ -150,7 +209,8 @@ const KanbanBoard = (() => {
                 id: "task-" + Date.now(),
                 content: taskContent,
                 status: columnId,
-                users: [...selectedUsers]
+                users: [...selectedUsers],
+                images: []
             };
 
             tasks.push(newTask);
@@ -192,6 +252,10 @@ const KanbanBoard = (() => {
         event.dataTransfer.setData("text/plain", event.target.id);
     }
 
+    function dragUser(event) {
+        event.dataTransfer.setData("text/user", event.target.dataset.id);
+    }
+
     function drop(event, columnId) {
         event.preventDefault();
         const data = event.dataTransfer.getData("text/plain");
@@ -199,6 +263,24 @@ const KanbanBoard = (() => {
         if (draggedElement) {
             updateTaskStatus(data, columnId);
             event.target.closest('.column').querySelector('.task-container').appendChild(draggedElement);
+        }
+    }
+
+    function dropUserOnTask(event, taskId) {
+        event.preventDefault();
+        const userId = event.dataTransfer.getData("text/user");
+        if (userId) {
+            addUserToTask(taskId, userId);
+        }
+    }
+
+    function addUserToTask(taskId, userId) {
+        const task = tasks.find(task => task.id === taskId);
+        if (task && !task.users.includes(userId)) {
+            task.users.push(userId);
+            updateLocalStorage();
+            renderTasks();
+            showConfirmation('User added to task successfully');
         }
     }
 
@@ -243,23 +325,20 @@ const KanbanBoard = (() => {
         document.getElementById('taskInput').addEventListener('input', event => capitalizeInput(event.target));
 
         document.addEventListener('click', (event) => {
-            if (!event.target.classList.contains('user') && !event.target.classList.contains('task')) {
-                clearUserSelections();
+            if (!event.target.closest('.task')) {
+                document.querySelectorAll('.users-panel .user').forEach(userDiv => {
+                    userDiv.classList.remove('selected');
+                });
             }
         });
     }
-
-    function clearUserSelections() {
-        selectedUsers = [];
-        document.querySelectorAll('.users-panel .user').forEach(userDiv => {
-            userDiv.classList.remove('selected');
-        });
-    }
+  
 
     return {
         addTask,
         renderTasks,
         deleteTask,
         updateTaskStatus
+      
     };
 })();
