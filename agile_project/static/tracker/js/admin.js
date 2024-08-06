@@ -18,7 +18,150 @@ const KanbanBoard = (() => {
         setupEventListeners();
     });
 
-    function renderTasks() {
+    const updateLocalStorage = () => {
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        localStorage.setItem('users', JSON.stringify(users));
+    };
+
+    const calculateRemainingDays = (endDate) => {
+        if (!endDate) return '';
+        const end = new Date(endDate);
+        const now = new Date();
+        const diffTime = Math.abs(end - now);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return `Remaining Days: ${diffDays}`;
+    };
+
+    const showConfirmation = (message) => {
+        const confirmation = document.createElement('div');
+        confirmation.className = 'confirmation';
+        confirmation.innerText = message;
+        document.body.appendChild(confirmation);
+        setTimeout(() => {
+            confirmation.remove();
+        }, 2000);
+    };
+
+    const allowDrop = (event) => event.preventDefault();
+
+    const drag = (event) => event.dataTransfer.setData("text/plain", event.target.id);
+
+    const dragUser = (event) => event.dataTransfer.setData("user-id", event.target.dataset.id);
+
+    const drop = (event, columnId) => {
+        event.preventDefault();
+        const data = event.dataTransfer.getData("text/plain");
+        const draggedElement = document.getElementById(data);
+        if (draggedElement) {
+            updateTaskStatus(data, columnId);
+            event.target.closest('.column').querySelector('.task-container').appendChild(draggedElement);
+        }
+    };
+
+    const dropUserOnTask = (event, taskId) => {
+        event.preventDefault();
+        const userId = event.dataTransfer.getData("user-id");
+        const task = tasks.find(task => task.id === taskId);
+        if (task && !task.users.includes(userId)) {
+            task.users.push(userId);
+            updateLocalStorage();
+            renderTasks();
+        }
+    };
+    function addTask(columnId) {
+        const taskInput = document.getElementById('taskInput');
+        const taskContent = taskInput.value.trim();
+
+        if (taskContent !== "") {
+            const newTask = {
+                id: "task-" + Date.now(),
+                content: taskContent,
+                status: columnId,
+                users: [...selectedUsers],
+                description: '',
+                endDate: '',
+                images: []
+
+            };
+
+            tasks.push(newTask);
+            updateLocalStorage();
+            renderTasks();
+            taskInput.value = "";
+            selectedUsers = [];
+            renderUsers();
+            showConfirmation('Task added successfully');
+        } else {
+            alert('Task content cannot be empty. Please enter a valid task.');
+        }
+    }
+
+    const deleteTask = (taskId) => {
+        tasks = tasks.filter(task => task.id !== taskId);
+        updateLocalStorage();
+        renderTasks();
+    };
+
+    const removeUserFromTask = (taskId, userId) => {
+        const task = tasks.find(task => task.id === taskId);
+        if (task) {
+            task.users = task.users.filter(id => id !== userId);
+            updateLocalStorage();
+            renderTasks();
+            showConfirmation('User removed from task successfully');
+        }
+    };
+
+    const deleteImage = (taskId, imageIndex) => {
+        const task = tasks.find(task => task.id === taskId);
+        if (task) {
+            task.images.splice(imageIndex, 1);
+            updateLocalStorage();
+            renderTasks();
+            showConfirmation('Image deleted successfully');
+        }
+    };
+
+    const highlightUsers = (taskId) => {
+        const task = tasks.find(task => task.id === taskId);
+        document.querySelectorAll('.users-panel .user').forEach(userDiv => {
+            if (task.users.includes(userDiv.dataset.id)) {
+                userDiv.classList.add('highlighted');
+            } else {
+                userDiv.classList.remove('highlighted');
+            }
+        });
+    };
+
+    const toggleUserSelection = (userId) => {
+        const userDiv = document.querySelector(`.users-panel .user[data-id="${userId}"]`);
+        if (selectedUsers.includes(userId)) {
+            selectedUsers = selectedUsers.filter(id => id !== userId);
+            userDiv.classList.remove('selected');
+        } else {
+            selectedUsers.push(userId);
+            userDiv.classList.add('selected');
+        }
+    };
+
+    const updateTaskStatus = (taskId, newStatus) => {
+        tasks = tasks.map(task => task.id === taskId ? { ...task, status: newStatus } : task);
+        updateLocalStorage();
+    };
+
+    const capitalizeInput = (input) => input.value = input.value.toUpperCase();
+
+    const setupUserRemoval = () => {
+        document.querySelectorAll('.task .users-container .user').forEach(userDiv => {
+            userDiv.addEventListener('dblclick', (e) => {
+                const userId = e.target.dataset.id;
+                const taskId = e.target.closest('.task').id;
+                removeUserFromTask(taskId, userId);
+            });
+        });
+    };
+
+    const renderTasks = () => {
         const columns = ['todo', 'in-progress', 'done'];
         columns.forEach(columnId => {
             const column = document.getElementById(columnId);
@@ -29,15 +172,14 @@ const KanbanBoard = (() => {
                     column.querySelector('.task-container').appendChild(taskElement);
                 });
         });
-    }
+        setupUserRemoval();
+    };
 
-    function createTaskElement(task) {
+    const createTaskElement = (task) => {
         const taskDiv = document.createElement("div");
         taskDiv.id = task.id;
         taskDiv.className = "task";
         taskDiv.draggable = true;
-        taskDiv.ondrop = (event) => dropUserOnTask(event, task.id);
-        taskDiv.ondragover = allowDrop;
 
         const userDetails = users.reduce((acc, user) => {
             acc[user.id] = user.name;
@@ -74,6 +216,11 @@ const KanbanBoard = (() => {
             <div class="description-container">
                 <label class="description-label" data-task-id="${task.id}">${task.description ? 'View Description' : 'Add Description'}</label>
                 <textarea class="description-input" data-task-id="${task.id}" style="display: none;">${task.description || ''}</textarea>
+            </div>
+            <div class="end-date-container">
+                <label class="end-date-label" data-task-id="${task.id}">Set End Date</label>
+                <input type="date" class="end-date-input" data-task-id="${task.id}" value="${task.endDate || ''}">
+                <div class="remaining-days" data-task-id="${task.id}">${calculateRemainingDays(task.endDate)}</div>
             </div>
             <div class="images-container">
                 ${imagesHtml}
@@ -139,6 +286,15 @@ const KanbanBoard = (() => {
             descriptionInput.style.display = 'none';
         });
 
+        const endDateInput = taskDiv.querySelector('.end-date-input');
+        const remainingDaysDiv = taskDiv.querySelector('.remaining-days');
+
+        endDateInput.addEventListener('change', () => {
+            task.endDate = endDateInput.value;
+            remainingDaysDiv.innerText = calculateRemainingDays(task.endDate);
+            updateLocalStorage();
+        });
+
         const imageUploadLabel = taskDiv.querySelector('.image-upload-label');
         const imageUploadInput = taskDiv.querySelector('.image-upload');
 
@@ -159,20 +315,13 @@ const KanbanBoard = (() => {
             }
         });
 
+        taskDiv.ondrop = event => dropUserOnTask(event, task.id);
+        taskDiv.ondragover = allowDrop;
+
         return taskDiv;
-    }
+    };
 
-    function deleteImage(taskId, imageIndex) {
-        const task = tasks.find(task => task.id === taskId);
-        if (task) {
-            task.images.splice(imageIndex, 1);
-            updateLocalStorage();
-            renderTasks();
-            showConfirmation('Image deleted successfully');
-        }
-    }
-
-    function renderUsers() {
+    const renderUsers = () => {
         const usersList = document.getElementById('usersList');
         usersList.innerHTML = users.map(user => `
             <div class="user" data-id="${user.id}" draggable="true">
@@ -185,130 +334,12 @@ const KanbanBoard = (() => {
                 toggleUserSelection(userDiv.dataset.id);
                 e.stopPropagation();
             });
+
             userDiv.addEventListener('dragstart', dragUser);
         });
-    }
+    };
 
-    function toggleUserSelection(userId) {
-        const userDiv = document.querySelector(`.users-panel .user[data-id="${userId}"]`);
-        if (selectedUsers.includes(userId)) {
-            selectedUsers = selectedUsers.filter(id => id !== userId);
-            userDiv.classList.remove('selected');
-        } else {
-            selectedUsers.push(userId);
-            userDiv.classList.add('selected');
-        }
-    }
-
-    function addTask(columnId) {
-        const taskInput = document.getElementById('taskInput');
-        const taskContent = taskInput.value.trim();
-
-        if (taskContent !== "") {
-            const newTask = {
-                id: "task-" + Date.now(),
-                content: taskContent,
-                status: columnId,
-                users: [...selectedUsers],
-                images: []
-            };
-
-            tasks.push(newTask);
-            updateLocalStorage();
-            renderTasks();
-            taskInput.value = "";
-            selectedUsers = [];
-            renderUsers();
-            showConfirmation('Task added successfully');
-        } else {
-            showConfirmation('Task content cannot be empty');
-        }
-    }
-
-    function highlightUsers(taskId) {
-        document.querySelectorAll('.users-panel .user').forEach(userDiv => {
-            userDiv.classList.remove('selected');
-        });
-        const task = tasks.find(task => task.id === taskId);
-        if (task) {
-            task.users.forEach(userId => {
-                document.querySelector(`.users-panel .user[data-id="${userId}"]`).classList.add('selected');
-            });
-        }
-    }
-
-    function deleteTask(taskId) {
-        tasks = tasks.filter(task => task.id !== taskId);
-        updateLocalStorage();
-        renderTasks();
-        showConfirmation('Task deleted successfully');
-    }
-
-    function allowDrop(event) {
-        event.preventDefault();
-    }
-
-    function drag(event) {
-        event.dataTransfer.setData("text/plain", event.target.id);
-    }
-
-    function dragUser(event) {
-        event.dataTransfer.setData("text/user", event.target.dataset.id);
-    }
-
-    function drop(event, columnId) {
-        event.preventDefault();
-        const data = event.dataTransfer.getData("text/plain");
-        const draggedElement = document.getElementById(data);
-        if (draggedElement) {
-            updateTaskStatus(data, columnId);
-            event.target.closest('.column').querySelector('.task-container').appendChild(draggedElement);
-        }
-    }
-
-    function dropUserOnTask(event, taskId) {
-        event.preventDefault();
-        const userId = event.dataTransfer.getData("text/user");
-        if (userId) {
-            addUserToTask(taskId, userId);
-        }
-    }
-
-    function addUserToTask(taskId, userId) {
-        const task = tasks.find(task => task.id === taskId);
-        if (task && !task.users.includes(userId)) {
-            task.users.push(userId);
-            updateLocalStorage();
-            renderTasks();
-            showConfirmation('User added to task successfully');
-        }
-    }
-
-    function capitalizeInput(input) {
-        input.value = input.value.toUpperCase();
-    }
-
-    function updateTaskStatus(taskId, newStatus) {
-        tasks = tasks.map(task => task.id === taskId ? { ...task, status: newStatus } : task);
-        updateLocalStorage();
-    }
-
-    function updateLocalStorage() {
-        localStorage.setItem('tasks', JSON.stringify(tasks));
-        localStorage.setItem('users', JSON.stringify(users));
-    }
-
-    function showConfirmation(message) {
-        const confirmation = document.createElement('div');
-        confirmation.className = 'confirmation';
-        confirmation.innerText = message;
-        document.body.appendChild(confirmation);
-        setTimeout(() => {
-            confirmation.remove();
-        }, 2000);
-    }
-
-    function setupEventListeners() {
+    const setupEventListeners = () => {
         document.querySelectorAll('.add-task-btn').forEach(button => {
             button.addEventListener('click', () => {
                 const columnId = button.closest('.column').id;
@@ -331,14 +362,13 @@ const KanbanBoard = (() => {
                 });
             }
         });
-    }
-  
+    };
 
     return {
         addTask,
         renderTasks,
         deleteTask,
         updateTaskStatus
-      
     };
 })();
+
